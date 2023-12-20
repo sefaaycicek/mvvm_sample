@@ -7,6 +7,7 @@ import android.view.View.OnClickListener
 import android.widget.Button
 import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.sirketismi.lesson2.databinding.ActivityMainBinding
 import com.sirketismi.lesson2.databinding.ActivityMainBindingImpl
@@ -25,14 +26,43 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        binding.btn1.setOnClickListener {
-            viewModel.updateFullname()
+    }
+
+    fun observerAll() {
+        viewModel.buttonClickObserver.observe(this, Observer {
+            if(it) {
+                viewModel.updateProductname("Product-1")
+            }
+        })
+
+        viewModel.onProductListUpdated.observe(this) {
+
         }
 
+        viewModel.loginObserver.observe(this) {loginType->
+            when(loginType) {
+                LoginType.FACEBOOK-> {}
+                LoginType.GOOGLE-> {}
+                else->{}
+            }
+
+        }
+    }
+
+    fun removeAllObservers() {
+        viewModel.buttonClickObserver.removeObservers(this)
+        viewModel.buttonClickObserver.postValue(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        observerAll()
     }
 
     override fun onPause() {
         super.onPause()
+        removeAllObservers()
+
     }
 
     override fun onStop() {
